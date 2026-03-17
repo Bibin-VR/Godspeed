@@ -24,6 +24,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919000000000"
   const whatsappText = encodeURIComponent("Hi GodSpeed Fitness, I want to know more about your programs.")
 
@@ -35,7 +36,7 @@ export default function RootLayout({
             <Link href="/" className="text-base font-bold tracking-tight sm:text-lg">
               <span className="flex items-center gap-2">
                 <img
-                  src={INSTAGRAM_PROFILE.profileImageUrl}
+                  src={`${publicBasePath}${INSTAGRAM_PROFILE.profileImageUrl}`}
                   alt="GodSpeed Gym logo"
                   className="h-7 w-7 rounded-full border border-white/20 object-cover sm:h-8 sm:w-8"
                 />

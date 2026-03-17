@@ -7,6 +7,9 @@ import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { INSTAGRAM_PROFILE, TOP_LIKED_POSTS, TOP_VIEWED_VIDEOS } from "@/lib/instagram-content"
 
 export default function HomePage() {
+  const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ""
+  const withBasePath = (url: string) => (url.startsWith("/") ? `${publicBasePath}${url}` : url)
+
   return (
     <SmoothScrollProvider>
       <main className="min-h-screen bg-background px-4 py-8 sm:px-6 md:px-10 md:py-14">
@@ -47,7 +50,7 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <Image
-              src="/images/hero-gym.jpg"
+              src={withBasePath("/images/hero-gym.jpg")}
               alt="GodSpeed Fitness athlete posing in gym"
               width={1200}
               height={1600}
@@ -116,7 +119,7 @@ export default function HomePage() {
                 className="overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:scale-[1.01]"
               >
                 <img
-                  src={item.imageUrl}
+                  src={withBasePath(item.imageUrl)}
                   alt="Top viewed gym video"
                   className="aspect-[4/5] w-full object-cover"
                   loading="lazy"
@@ -146,7 +149,7 @@ export default function HomePage() {
                 className="overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:scale-[1.01]"
               >
                 <img
-                  src={item.imageUrl}
+                  src={withBasePath(item.imageUrl)}
                   alt="Top liked gym post"
                   className="aspect-[4/5] w-full object-cover"
                   loading="lazy"
