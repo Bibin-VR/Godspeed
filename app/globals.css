@@ -127,3 +127,15 @@
     @apply font-sans;
   }
 }
+
+.text-depth-hero {
+  text-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+}
+
+.text-depth-sub {
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.text-depth-image-caption {
+  text-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}

@@ -12,19 +12,19 @@ export default function HomePage() {
 
   return (
     <SmoothScrollProvider>
-      <main className="min-h-screen bg-background px-4 py-8 sm:px-6 md:px-10 md:py-14">
+      <main className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(124,58,237,0.18),transparent_42%),radial-gradient(circle_at_78%_18%,rgba(6,182,212,0.14),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))] px-4 py-8 sm:px-6 md:px-10 md:py-14">
         <section className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
           <motion.div
-            className="space-y-5"
+            className="space-y-5 rounded-3xl border border-white/15 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8"
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
             <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">GodSpeed Fitness</p>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+            <h1 className="text-depth-hero text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl">
               Build raw strength. Sculpt peak conditioning.
             </h1>
-            <p className="max-w-xl text-base text-muted-foreground md:text-lg">
+            <p className="text-depth-sub max-w-xl text-base text-muted-foreground md:text-lg">
               {INSTAGRAM_PROFILE.bio}
             </p>
             <div className="flex flex-wrap gap-3">
@@ -44,22 +44,25 @@ export default function HomePage() {
           </motion.div>
 
           <motion.div
-            className="relative overflow-hidden rounded-2xl border border-border/60"
+            className="relative overflow-hidden rounded-3xl border border-white/20 bg-white/5 shadow-2xl backdrop-blur-xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
+            <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-br from-white/15 via-transparent to-black/25" />
             <Image
               src={withBasePath("/images/hero-gym.jpg")}
               alt="GodSpeed Fitness athlete posing in gym"
               width={1200}
               height={1600}
               priority
-              className="h-[48vh] min-h-[320px] w-full object-cover sm:h-[56vh] lg:h-[68vh]"
+              className="h-[48vh] min-h-[320px] w-full scale-[1.03] object-cover sm:h-[56vh] lg:h-[68vh]"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-              <p className="text-xl font-semibold text-white">Train hard. Recover smart. Progress every week.</p>
+            <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/30 to-transparent p-6">
+              <p className="text-depth-image-caption text-xl font-semibold text-white">
+                Train hard. Recover smart. Progress every week.
+              </p>
             </div>
           </motion.div>
         </section>
@@ -81,7 +84,7 @@ export default function HomePage() {
           ].map((panel, index) => (
             <motion.article
               key={panel.title}
-              className="rounded-2xl border border-border bg-card p-6"
+              className="rounded-2xl border border-white/15 bg-white/5 p-6 shadow-xl backdrop-blur-lg"
               initial={{ opacity: 0, y: 26 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -117,6 +120,7 @@ export default function HomePage() {
                 target="_blank"
                 rel="noreferrer"
                 className="overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:scale-[1.01]"
+                
               >
                 <img
                   src={withBasePath(item.imageUrl)}
