@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <header className="sticky top-0 z-50 border-b border-border/60 bg-background/85 backdrop-blur">
-          <nav className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 md:px-8">
+          <nav className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 md:px-8">
             <Link href="/" className="text-base font-bold tracking-tight sm:text-lg">
               <span className="flex items-center gap-2">
                 <img
@@ -43,7 +43,8 @@ export default function RootLayout({
                 <span>GodSpeed Fitness</span>
               </span>
             </Link>
-            <div className="flex flex-wrap items-center justify-end gap-2 text-xs sm:gap-4 sm:text-sm">
+
+            <div className="hidden items-center justify-end gap-4 text-sm md:flex">
               <Link href="/about" className="text-muted-foreground transition-colors hover:text-foreground">
                 About
               </Link>
@@ -62,6 +63,41 @@ export default function RootLayout({
                 Instagram
               </a>
             </div>
+
+            <details className="relative md:hidden">
+              <summary className="flex h-10 w-10 cursor-pointer list-none flex-col items-center justify-center gap-1 rounded-md border border-border/70 bg-background/70 text-foreground marker:content-none">
+                <span className="sr-only">Open menu</span>
+                <span className="block h-0.5 w-5 rounded bg-current" />
+                <span className="block h-0.5 w-5 rounded bg-current" />
+                <span className="block h-0.5 w-5 rounded bg-current" />
+              </summary>
+
+              <div className="absolute right-0 top-12 z-50 min-w-44 rounded-xl border border-border bg-card p-2 shadow-xl">
+                <Link href="/about" className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
+                  About
+                </Link>
+                <Link
+                  href="/contact"
+                  className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  Contact
+                </Link>
+                <Link
+                  href="/join"
+                  className="mt-1 block rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
+                >
+                  Join
+                </Link>
+                <a
+                  href={INSTAGRAM_PROFILE.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-1 block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  Instagram
+                </a>
+              </div>
+            </details>
           </nav>
         </header>
         {children}
