@@ -25,8 +25,8 @@ export async function POST(request: Request) {
     const stripe = getStripe()
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: selectedPlan.stripeAmountUsdCents,
-      currency: "usd",
+      amount: selectedPlan.stripeAmountInrPaise,
+      currency: "inr",
       payment_method_types: ["card"],
       metadata: {
         planId: body.planId,
@@ -45,8 +45,8 @@ export async function POST(request: Request) {
     return NextResponse.json({
       clientSecret: paymentIntent.client_secret,
       paymentIntentId: paymentIntent.id,
-      amount: selectedPlan.stripeAmountUsdCents,
-      currency: "usd",
+      amount: selectedPlan.stripeAmountInrPaise,
+      currency: "inr",
     })
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unexpected error"

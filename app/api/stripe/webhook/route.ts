@@ -88,7 +88,7 @@ export async function POST(request: Request) {
             payload: {
               id: paymentIntent.id,
               planId,
-              expectedAmount: plan.stripeAmountUsdCents,
+              expectedAmount: plan.stripeAmountInrPaise,
               metadata: paymentIntent.metadata,
             },
           },
@@ -116,12 +116,12 @@ export async function POST(request: Request) {
           status: "FAILED",
           paymentId: paymentIntent.id,
           amount: paymentIntent.amount ?? 0,
-          currency: (paymentIntent.currency ?? "usd").toUpperCase(),
+          currency: (paymentIntent.currency ?? "inr").toUpperCase(),
           payload: {
             id: paymentIntent.id,
             status: paymentIntent.status,
             amount: paymentIntent.amount ?? 0,
-            currency: paymentIntent.currency ?? "usd",
+            currency: paymentIntent.currency ?? "inr",
             metadata: paymentIntent.metadata,
             lastPaymentError: paymentIntent.last_payment_error
               ? {
