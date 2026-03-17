@@ -25,8 +25,8 @@ export function PricingCards({ selectedPlan, onSelectPlan }: PricingCardsProps) 
             className={cn(
               "rounded-2xl border p-5 text-left transition-all",
               isSelected
-                ? "border-primary bg-primary/10 shadow-sm"
-                : "border-border bg-card hover:border-primary/60",
+                ? "border-primary/80 bg-primary/20 shadow-lg backdrop-blur-sm"
+                : "border-white/15 bg-white/5 backdrop-blur-sm hover:border-primary/60",
             )}
           >
             <h3 className="text-2xl font-semibold">{plan.name}</h3>

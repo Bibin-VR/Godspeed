@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { INSTAGRAM_PROFILE } from "@/lib/instagram-content"
+import { SiteNavLinks } from "@/components/site-nav-links"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 
@@ -45,15 +46,7 @@ export default function RootLayout({
             </Link>
 
             <div className="hidden items-center justify-end gap-4 text-sm md:flex">
-              <Link href="/about" className="text-muted-foreground transition-colors hover:text-foreground">
-                About
-              </Link>
-              <Link href="/contact" className="text-muted-foreground transition-colors hover:text-foreground">
-                Contact
-              </Link>
-              <Link href="/join" className="rounded-full bg-primary px-4 py-1.5 font-semibold text-primary-foreground">
-                Join
-              </Link>
+              <SiteNavLinks />
               <a
                 href={INSTAGRAM_PROFILE.url}
                 target="_blank"
@@ -73,21 +66,7 @@ export default function RootLayout({
               </summary>
 
               <div className="absolute right-0 top-12 z-50 min-w-44 rounded-xl border border-border bg-card p-2 shadow-xl">
-                <Link href="/about" className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground">
-                  About
-                </Link>
-                <Link
-                  href="/contact"
-                  className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                >
-                  Contact
-                </Link>
-                <Link
-                  href="/join"
-                  className="mt-1 block rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground"
-                >
-                  Join
-                </Link>
+                <SiteNavLinks mobile />
                 <a
                   href={INSTAGRAM_PROFILE.url}
                   target="_blank"

@@ -195,8 +195,8 @@ export function JoinMultiStepForm() {
   }
 
   return (
-    <section className="rounded-3xl border border-border bg-card/40 p-6 md:p-8">
-      <div className="mb-6 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+    <section className="rounded-3xl border border-white/15 bg-white/5 p-6 shadow-2xl backdrop-blur-xl md:p-8">
+      <div className="mb-6 flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
         {steps.map((label, index) => {
           const current = index + 1
           const active = current === step
@@ -204,7 +204,11 @@ export function JoinMultiStepForm() {
           return (
             <div key={label} className="flex items-center gap-2">
               <span
-                className={active ? "text-foreground" : "text-muted-foreground"}
+                className={
+                  active
+                    ? "rounded-full border border-primary/70 bg-primary/15 px-2.5 py-1 text-foreground"
+                    : "rounded-full border border-transparent px-2.5 py-1 text-muted-foreground"
+                }
               >{`${current}. ${label}`}</span>
               {index < steps.length - 1 ? <span>•</span> : null}
             </div>
@@ -309,7 +313,7 @@ export function JoinMultiStepForm() {
 
       {step === 3 ? (
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-          <div className="rounded-xl border border-border bg-background/80 p-4">
+          <div className="rounded-xl border border-white/15 bg-background/60 p-4 backdrop-blur-sm">
             <p className="text-sm text-muted-foreground">Selected plan</p>
             <p className="text-lg font-semibold">{selectedPlanInfo.name}</p>
           </div>
