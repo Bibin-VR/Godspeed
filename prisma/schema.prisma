@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanTier {
+  STARTER
+  PRO
+  ELITE
+}
+
+enum PaymentProvider {
+  STRIPE
+  RAZORPAY
+}
+
+enum MembershipStatus {
+  PENDING
+  ACTIVE
+  CANCELLED
+}
+
+enum TransactionStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+model User {
+  id           String           @id @default(cuid())
+  email        String           @unique
+  name         String?
+  memberships  Membership[]
+  transactions TransactionLog[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model Membership {
+  id                String            @id @default(cuid())
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan              PlanTier
+  provider          PaymentProvider
+  status            MembershipStatus  @default(PENDING)
+  amount            Int
+  currency          String
+  externalPaymentId String?           @unique
+  externalOrderId   String?
+  startsAt          DateTime          @default(now())
+  endsAt            DateTime?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  transactions TransactionLog[]
+
+  @@index([userId])
+}
+
+model TransactionLog {
+  id           String            @id @default(cuid())
+  userId       String?
+  user         User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  membershipId String?
+  membership   Membership?       @relation(fields: [membershipId], references: [id], onDelete: SetNull)
+  provider     PaymentProvider
+  status       TransactionStatus
+  paymentId    String?
+  orderId      String?
+  amount       Int
+  currency     String
+  payload      Json
+  createdAt    DateTime          @default(now())
+
+  @@index([userId])
+  @@index([membershipId])
+}

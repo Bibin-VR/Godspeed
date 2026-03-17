@@ -1,65 +1,184 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import Image from "next/image"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
+import { INSTAGRAM_PROFILE, TOP_LIKED_POSTS, TOP_VIEWED_VIDEOS } from "@/lib/instagram-content"
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <SmoothScrollProvider>
+      <main className="min-h-screen bg-background px-4 py-8 sm:px-6 md:px-10 md:py-14">
+        <section className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
+          <motion.div
+            className="space-y-5"
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="text-sm font-medium uppercase tracking-[0.2em] text-muted-foreground">GodSpeed Fitness</p>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Build raw strength. Sculpt peak conditioning.
+            </h1>
+            <p className="max-w-xl text-base text-muted-foreground md:text-lg">
+              {INSTAGRAM_PROFILE.bio}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/join"
+                className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Start Membership
+              </Link>
+              <Link
+                href="/about"
+                className="rounded-full border border-border px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-muted"
+              >
+                Explore Programs
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="relative overflow-hidden rounded-2xl border border-border/60"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/images/hero-gym.jpg"
+              alt="GodSpeed Fitness athlete posing in gym"
+              width={1200}
+              height={1600}
+              priority
+              className="h-[48vh] min-h-[320px] w-full object-cover sm:h-[56vh] lg:h-[68vh]"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+              <p className="text-xl font-semibold text-white">Train hard. Recover smart. Progress every week.</p>
+            </div>
+          </motion.div>
+        </section>
+
+        <section className="mx-auto mt-16 grid w-full max-w-6xl gap-4 sm:gap-6 md:mt-24 md:grid-cols-3">
+          {[
+            {
+              title: "Strength & Hypertrophy",
+              body: "Structured progressive overload blocks with data-backed volume and intensity control.",
+            },
+            {
+              title: "Fat Loss & Conditioning",
+              body: "High-efficiency metabolic circuits and conditioning programs tailored to your goal.",
+            },
+            {
+              title: "Nutrition Coaching",
+              body: "Macro planning, meal frameworks, and accountability check-ins for consistent results.",
+            },
+          ].map((panel, index) => (
+            <motion.article
+              key={panel.title}
+              className="rounded-2xl border border-border bg-card p-6"
+              initial={{ opacity: 0, y: 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ delay: index * 0.08, duration: 0.45 }}
+            >
+              <h2 className="text-lg font-semibold sm:text-xl">{panel.title}</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{panel.body}</p>
+            </motion.article>
+          ))}
+        </section>
+
+        <section className="mx-auto mt-16 w-full max-w-6xl md:mt-24">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Most Viewed Videos</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Top performing reels from @godspeed_gym</p>
+            </div>
+            <a
+              href={INSTAGRAM_PROFILE.url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-semibold text-primary"
+            >
+              View all
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {TOP_VIEWED_VIDEOS.map((item) => (
+              <a
+                key={item.shortcode}
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                className="overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:scale-[1.01]"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt="Top viewed gym video"
+                  className="aspect-[4/5] w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="space-y-1 p-4 text-sm">
+                  <p className="font-semibold">{item.views?.toLocaleString()} views</p>
+                  <p className="text-muted-foreground">{item.likes.toLocaleString()} likes · {item.comments} comments</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto mt-16 w-full max-w-6xl md:mt-24">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Top Liked Posts</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Popular transformation and training content</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {TOP_LIKED_POSTS.map((item) => (
+              <a
+                key={item.shortcode}
+                href={item.url}
+                target="_blank"
+                rel="noreferrer"
+                className="overflow-hidden rounded-2xl border border-border bg-card transition-transform hover:scale-[1.01]"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt="Top liked gym post"
+                  className="aspect-[4/5] w-full object-cover"
+                  loading="lazy"
+                />
+                <div className="space-y-1 p-4 text-sm">
+                  <p className="font-semibold">{item.likes.toLocaleString()} likes</p>
+                  <p className="text-muted-foreground">{item.comments} comments</p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        <motion.section
+          className="mx-auto mt-16 max-w-6xl rounded-3xl border border-border bg-gradient-to-r from-violet-500/10 via-cyan-500/10 to-emerald-500/10 p-6 text-center sm:p-8 md:mt-24 md:p-10"
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+        >
+          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Ready for your transformation?</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
+            Join GodSpeed Fitness and get access to elite coaching, programming, and a disciplined training community.
+          </p>
+          <Link
+            href="/join"
+            className="mt-6 inline-flex rounded-full bg-primary px-7 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
-            Documentation
-          </a>
-        </div>
+            Join the Gym
+          </Link>
+        </motion.section>
       </main>
-    </div>
-  );
+    </SmoothScrollProvider>
+  )
 }
