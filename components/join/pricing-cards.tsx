@@ -31,7 +31,7 @@ export function PricingCards({ selectedPlan, onSelectPlan }: PricingCardsProps) 
           >
             <h3 className="text-2xl font-semibold">{plan.name}</h3>
             <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-            <p className="mt-4 text-3xl font-bold">₹{(plan.stripeAmountInrPaise / 100).toLocaleString("en-IN")}</p>
+            <p className="mt-4 text-3xl font-bold">₹{(plan.upiAmountInrPaise / 100).toLocaleString("en-IN")}</p>
             <ul className="mt-4 space-y-1 text-sm text-muted-foreground">
               {plan.features.map((feature) => (
                 <li key={feature}>• {feature}</li>

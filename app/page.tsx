@@ -35,6 +35,12 @@ export default function HomePage() {
                 Start Membership
               </Link>
               <Link
+                href="/shop"
+                className="rounded-full border border-border px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-muted"
+              >
+                Shop Supplements
+              </Link>
+              <Link
                 href="/about"
                 className="rounded-full border border-border px-6 py-2.5 text-sm font-semibold transition-colors hover:bg-muted"
               >

@@ -6,7 +6,7 @@ export default function JoinPage() {
       <section className="mx-auto max-w-5xl rounded-3xl border border-white/15 bg-white/5 p-5 shadow-2xl backdrop-blur-xl md:p-8">
         <h1 className="text-4xl font-bold tracking-tight md:text-5xl">Join GodSpeed Fitness</h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Choose your training membership and complete secure payment with Stripe or Razorpay.
+          Choose your training membership and complete secure payment in UPI mode.
         </p>
 
         <div className="mt-8">

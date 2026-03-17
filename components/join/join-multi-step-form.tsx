@@ -2,50 +2,12 @@
 
 import { useMemo, useState } from "react"
 import { motion } from "framer-motion"
-import { Elements } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js"
 import { PLAN_DEFINITIONS, type PlanId } from "@/lib/plans"
 import { PricingCards } from "@/components/join/pricing-cards"
-import { StripeCheckoutForm } from "@/components/join/stripe-checkout-form"
 
-type PaymentMethod = "stripe" | "razorpay"
-
-type CreateIntentResponse = {
-  clientSecret: string
-}
-
-type CreateOrderResponse = {
-  orderId: string
-  amount: number
-  currency: string
-  keyId: string
-}
-
-declare global {
-  interface Window {
-    Razorpay?: new (options: Record<string, unknown>) => {
-      open: () => void
-    }
-  }
-}
-
-const stripePromise =
-  typeof window === "undefined" || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    ? null
-    : loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-
-async function loadRazorpayScript(): Promise<boolean> {
-  if (typeof window === "undefined") return false
-  if (window.Razorpay) return true
-
-  return new Promise((resolve) => {
-    const script = document.createElement("script")
-    script.src = "https://checkout.razorpay.com/v1/checkout.js"
-    script.async = true
-    script.onload = () => resolve(true)
-    script.onerror = () => resolve(false)
-    document.body.appendChild(script)
-  })
+type VerifyUpiResponse = {
+  verified: boolean
+  error?: string
 }
 
 const steps = ["Plan", "Details", "Payment"] as const
@@ -56,12 +18,16 @@ export function JoinMultiStepForm() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("stripe")
-  const [clientSecret, setClientSecret] = useState<string>("")
+  const [utr, setUtr] = useState("")
   const [status, setStatus] = useState<string>("")
   const [busy, setBusy] = useState(false)
 
   const selectedPlanInfo = useMemo(() => PLAN_DEFINITIONS[selectedPlan], [selectedPlan])
+  const amountInr = selectedPlanInfo.upiAmountInrPaise / 100
+  const upiId = process.env.NEXT_PUBLIC_UPI_ID ?? "godspeed@upi"
+  const upiName = process.env.NEXT_PUBLIC_UPI_NAME ?? "GodSpeed Fitness"
+  const isStaticExport = process.env.NEXT_PUBLIC_STATIC_EXPORT === "true"
+  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "919000000000"
 
   function toNextStep() {
     if (step < 3) setStep((prev) => prev + 1)
@@ -71,93 +37,16 @@ export function JoinMultiStepForm() {
     if (step > 1) setStep((prev) => prev - 1)
   }
 
-  async function prepareStripePayment() {
-    const response = await fetch("/api/stripe/create-intent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        planId: selectedPlan,
-        name,
-        email,
-        phone,
-      }),
+  function createUpiPaymentLink() {
+    const params = new URLSearchParams({
+      pa: upiId,
+      pn: upiName,
+      am: amountInr.toFixed(2),
+      cu: "INR",
+      tn: `${selectedPlanInfo.name} Membership`,
     })
 
-    const data = (await response.json()) as CreateIntentResponse & { error?: string }
-
-    if (!response.ok || !data.clientSecret) {
-      throw new Error(data.error ?? "Unable to initialize Stripe")
-    }
-
-    setClientSecret(data.clientSecret)
-  }
-
-  async function handleRazorpay() {
-    const loaded = await loadRazorpayScript()
-    if (!loaded || !window.Razorpay) {
-      throw new Error("Failed to load Razorpay checkout")
-    }
-
-    const orderResponse = await fetch("/api/razorpay/create-order", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        planId: selectedPlan,
-        email,
-        name,
-        phone,
-      }),
-    })
-
-    const orderData = (await orderResponse.json()) as CreateOrderResponse & { error?: string }
-
-    if (!orderResponse.ok || !orderData.orderId || !orderData.keyId) {
-      throw new Error(orderData.error ?? "Unable to create Razorpay order")
-    }
-
-    const razorpay = new window.Razorpay({
-      key: orderData.keyId,
-      amount: orderData.amount,
-      currency: orderData.currency,
-      name: "GodSpeed",
-      description: `${selectedPlanInfo.name} Membership`,
-      order_id: orderData.orderId,
-      prefill: {
-        name,
-        email,
-      },
-      handler: async (response: {
-        razorpay_order_id: string
-        razorpay_payment_id: string
-        razorpay_signature: string
-      }) => {
-        const verifyResponse = await fetch("/api/razorpay/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...response,
-            planId: selectedPlan,
-            name,
-            email,
-            phone,
-          }),
-        })
-
-        const verifyData = (await verifyResponse.json()) as { verified: boolean; error?: string }
-
-        if (!verifyResponse.ok || !verifyData.verified) {
-          setStatus(verifyData.error ?? "Payment verification failed")
-          return
-        }
-
-        setStatus("Razorpay payment verified. Membership is now active. Welcome message will be sent on WhatsApp.")
-      },
-      theme: {
-        color: "#6d28d9",
-      },
-    })
-
-    razorpay.open()
+    return `upi://pay?${params.toString()}`
   }
 
   async function handleContinueFromDetails() {
@@ -170,9 +59,6 @@ export function JoinMultiStepForm() {
     setBusy(true)
 
     try {
-      if (paymentMethod === "stripe") {
-        await prepareStripePayment()
-      }
       setStep(3)
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Unable to continue")
@@ -181,14 +67,56 @@ export function JoinMultiStepForm() {
     }
   }
 
-  async function handleRazorpayPay() {
+  async function handleUpiPay() {
+    const upiLink = createUpiPaymentLink()
+
+    if (typeof window !== "undefined") {
+      window.location.href = upiLink
+    }
+
+    setStatus("UPI payment app opened. Complete payment, then submit your UTR below.")
+  }
+
+  async function handleSubmitUtr() {
+    if (!utr.trim()) {
+      setStatus("Please enter your UTR / transaction reference")
+      return
+    }
+
     setBusy(true)
-    setStatus("")
 
     try {
-      await handleRazorpay()
+      if (isStaticExport) {
+        const text = encodeURIComponent(
+          `Membership UPI payment submitted\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nPlan: ${selectedPlanInfo.name}\nAmount: ₹${amountInr.toLocaleString("en-IN")}\nUTR: ${utr.trim()}`,
+        )
+        window.open(`https://wa.me/${whatsappNumber}?text=${text}`, "_blank", "noopener,noreferrer")
+        setStatus("UTR shared on WhatsApp. Team will verify and activate your membership.")
+        return
+      }
+
+      const verifyResponse = await fetch("/api/upi/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          planId: selectedPlan,
+          name,
+          email,
+          phone,
+          utr,
+        }),
+      })
+
+      const verifyData = (await verifyResponse.json()) as VerifyUpiResponse
+
+      if (!verifyResponse.ok || !verifyData.verified) {
+        setStatus(verifyData.error ?? "UPI verification failed")
+        return
+      }
+
+      setStatus("UPI payment received. Membership is now active. Welcome message will be sent on WhatsApp.")
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "Unable to start Razorpay checkout")
+      setStatus(error instanceof Error ? error.message : "Unable to submit UPI reference")
     } finally {
       setBusy(false)
     }
@@ -263,32 +191,9 @@ export function JoinMultiStepForm() {
             />
           </div>
 
-          <div>
-            <p className="mb-2 text-sm font-medium">Payment method</p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("stripe")}
-                className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                  paymentMethod === "stripe"
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border text-foreground"
-                }`}
-              >
-                Stripe
-              </button>
-              <button
-                type="button"
-                onClick={() => setPaymentMethod("razorpay")}
-                className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                  paymentMethod === "razorpay"
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border text-foreground"
-                }`}
-              >
-                Razorpay
-              </button>
-            </div>
+          <div className="rounded-xl border border-white/15 bg-background/60 p-4 backdrop-blur-sm">
+            <p className="text-sm text-muted-foreground">Payment mode</p>
+            <p className="text-base font-semibold">UPI</p>
           </div>
 
           <div className="flex gap-3 pt-2">
@@ -316,35 +221,40 @@ export function JoinMultiStepForm() {
           <div className="rounded-xl border border-white/15 bg-background/60 p-4 backdrop-blur-sm">
             <p className="text-sm text-muted-foreground">Selected plan</p>
             <p className="text-lg font-semibold">{selectedPlanInfo.name}</p>
+            <p className="mt-1 text-sm text-muted-foreground">Amount: ₹{amountInr.toLocaleString("en-IN")}</p>
           </div>
 
-          {paymentMethod === "stripe" ? (
-            stripePromise && clientSecret ? (
-              <Elements stripe={stripePromise} options={{ clientSecret }}>
-                <StripeCheckoutForm
-                  clientSecret={clientSecret}
-                  email={email}
-                  name={name}
-                  onSuccess={(paymentId) => {
-                    setStatus(
-                      `Stripe payment ${paymentId} completed. Membership activation will be finalized by webhook and welcome message will be sent on WhatsApp.`,
-                    )
-                  }}
-                />
-              </Elements>
-            ) : (
-              <p className="text-sm text-muted-foreground">Stripe is unavailable. Check publishable key.</p>
-            )
-          ) : (
-            <button
-              type="button"
-              onClick={handleRazorpayPay}
-              disabled={busy}
-              className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-50"
-            >
-              {busy ? "Starting checkout..." : "Pay with Razorpay"}
-            </button>
-          )}
+          <div className="rounded-xl border border-white/15 bg-background/60 p-4 backdrop-blur-sm">
+            <p className="text-sm text-muted-foreground">UPI ID</p>
+            <p className="text-base font-semibold">{upiId}</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleUpiPay}
+            className="w-full rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+          >
+            Open UPI App
+          </button>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium">UTR / Transaction reference</label>
+            <input
+              value={utr}
+              onChange={(event) => setUtr(event.target.value)}
+              className="w-full rounded-xl border border-border bg-background px-3 py-2"
+              placeholder="e.g. 409837654321"
+            />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleSubmitUtr}
+            disabled={busy}
+            className="w-full rounded-full border border-border px-4 py-2.5 text-sm font-semibold disabled:opacity-50"
+          >
+            {busy ? "Verifying..." : isStaticExport ? "Submit UTR on WhatsApp" : "Submit UTR & Activate Membership"}
+          </button>
 
           <button
             type="button"

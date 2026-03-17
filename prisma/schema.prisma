@@ -14,8 +14,7 @@ enum PlanTier {
 }
 
 enum PaymentProvider {
-  STRIPE
-  RAZORPAY
+  UPI
 }
 
 enum MembershipStatus {

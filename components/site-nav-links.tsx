@@ -47,6 +47,9 @@ export function SiteNavLinks({ mobile = false }: SiteNavLinksProps) {
 
   return (
     <>
+      <Link href="/shop" className={getLinkClass("/shop")}>
+        Shop
+      </Link>
       <Link href="/about" className={getLinkClass("/about")}>
         About
       </Link>
